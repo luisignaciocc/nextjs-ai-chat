@@ -189,8 +189,8 @@ async function submitUserMessage(content: string) {
             .optional()
             .describe('The size of the requested image.'),
           model: z
-            // .enum(['dall-e-2', 'dall-e-3'])
-            .enum(['dall-e-2'])
+            .enum(['dall-e-2', 'dall-e-3'])
+            // .enum(['dall-e-2'])
             .optional()
             .default('dall-e-2')
             .describe('The DALL-E model to use.')
@@ -223,6 +223,10 @@ async function submitUserMessage(content: string) {
               throw new Error('Failed to generate image')
             }
 
+            const width = 640
+            const height =
+              size === '1024x1024' ? 640 : size === '1024x1792' ? 1120 : 366
+
             aiState.done({
               ...aiState.get(),
               messages: [
@@ -247,17 +251,12 @@ async function submitUserMessage(content: string) {
                       type: 'tool-result',
                       toolName: 'dalle',
                       toolCallId,
-                      result: { imageUrl }
+                      result: { imageUrl, width, height }
                     }
                   ]
                 }
               ]
             })
-
-            const width =
-              size === '1024x1024' ? 1024 : size === '1024x1792' ? 1024 : 1792
-            const height =
-              size === '1024x1024' ? 1024 : size === '1024x1792' ? 1792 : 1024
 
             return (
               <BotCard>
@@ -297,7 +296,7 @@ async function submitUserMessage(content: string) {
                       type: 'tool-result',
                       toolName: 'dalle',
                       toolCallId,
-                      result: { error: 'Failed to generate image' }
+                      result: { error: 'Error generando la imagen' }
                     }
                   ]
                 }
@@ -397,20 +396,22 @@ export const getUIStateFromAIState = (aiState: Chat) => {
               (tool.result as { imageUrl: string })?.imageUrl ? (
               <BotCard>
                 <a
-                  href={(tool.result as { imageUrl: string })?.imageUrl}
+                  href={(tool.result as { imageUrl: string }).imageUrl}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <Image
-                    src={(tool.result as { imageUrl: string })?.imageUrl}
+                    src={(tool.result as { imageUrl: string }).imageUrl}
                     alt="Imagen generada por DALL-E"
                     className="w-full h-auto rounded-lg"
-                    height={1024}
-                    width={1024}
+                    height={(tool.result as { height: number }).height}
+                    width={(tool.result as { width: number }).width}
                   />
                 </a>
               </BotCard>
-            ) : null
+            ) : (
+              <BotMessage content={`Error generando la imagen`} />
+            )
           })
         ) : message.role === 'user' ? (
           <UserMessage>{message.content as string}</UserMessage>

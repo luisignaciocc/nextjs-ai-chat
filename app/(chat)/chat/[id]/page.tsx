@@ -13,6 +13,8 @@ export interface ChatPageProps {
   }
 }
 
+export const maxDuration = 60
+
 export async function generateMetadata({
   params
 }: ChatPageProps): Promise<Metadata> {
