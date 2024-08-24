@@ -124,7 +124,7 @@ async function submitUserMessage(content: string) {
   let textNode: undefined | React.ReactNode
 
   const result = await streamUI({
-    model: openai('gpt-4o'),
+    model: openai('gpt-4o-mini'),
     initial: <SpinnerMessage />,
     system: `\
       You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2023-10. Current date: ${
@@ -189,7 +189,8 @@ async function submitUserMessage(content: string) {
             .optional()
             .describe('The size of the requested image.'),
           model: z
-            .enum(['dall-e-2', 'dall-e-3'])
+            // .enum(['dall-e-2', 'dall-e-3'])
+            .enum(['dall-e-2'])
             .optional()
             .default('dall-e-2')
             .describe('The DALL-E model to use.')
