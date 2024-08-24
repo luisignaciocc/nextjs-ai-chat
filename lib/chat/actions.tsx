@@ -27,6 +27,7 @@ import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/message'
 import { Chat, Message } from '@/lib/types'
 import { auth } from '@/auth'
+import Image from 'next/image'
 
 const openaiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -252,13 +253,22 @@ async function submitUserMessage(content: string) {
               ]
             })
 
+            const width =
+              size === '1024x1024' ? 1024 : size === '1024x1792' ? 1024 : 1792
+            const height =
+              size === '1024x1024' ? 1024 : size === '1024x1792' ? 1792 : 1024
+
             return (
               <BotCard>
-                <img
-                  src={imageUrl}
-                  alt="Imagen generada por DALL-E"
-                  className="w-full h-auto rounded-lg"
-                />
+                <a href={imageUrl} target="_blank" rel="noreferrer">
+                  <Image
+                    src={imageUrl}
+                    alt="Imagen generada por DALL-E"
+                    className="w-full h-auto rounded-lg"
+                    height={height}
+                    width={width}
+                  />
+                </a>
               </BotCard>
             )
           } catch (error) {
@@ -385,11 +395,19 @@ export const getUIStateFromAIState = (aiState: Chat) => {
             return tool.toolName === 'dalle' &&
               (tool.result as { imageUrl: string })?.imageUrl ? (
               <BotCard>
-                <img
-                  src={(tool.result as { imageUrl: string })?.imageUrl}
-                  alt="Imagen generada por DALL-E"
-                  className="w-full h-auto rounded-lg"
-                />
+                <a
+                  href={(tool.result as { imageUrl: string })?.imageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image
+                    src={(tool.result as { imageUrl: string })?.imageUrl}
+                    alt="Imagen generada por DALL-E"
+                    className="w-full h-auto rounded-lg"
+                    height={1024}
+                    width={1024}
+                  />
+                </a>
               </BotCard>
             ) : null
           })
