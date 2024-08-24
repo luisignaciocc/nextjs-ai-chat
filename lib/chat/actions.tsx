@@ -185,7 +185,8 @@ async function submitUserMessage(content: string) {
             .string()
             .describe('A detailed description of the image to generate.'),
           size: z
-            .enum(['1792x1024', '1024x1024', '1024x1792'])
+            // .enum(['1792x1024', '1024x1024', '1024x1792'])
+            .enum(['1024x1024'])
             .optional()
             .describe('The size of the requested image.'),
           model: z
