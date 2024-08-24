@@ -14,17 +14,11 @@ import {
   spinner,
   BotCard,
   BotMessage,
-  SystemMessage,
-  Stock,
-  Purchase
+  SystemMessage
 } from '@/components/stocks'
+import { ImageLoadingSkeleton } from '@/components/image-loading-skeleton'
 
 import { z } from 'zod'
-import { EventsSkeleton } from '@/components/stocks/events-skeleton'
-import { Events } from '@/components/stocks/events'
-import { StocksSkeleton } from '@/components/stocks/stocks-skeleton'
-import { Stocks } from '@/components/stocks/stocks'
-import { StockSkeleton } from '@/components/stocks/stock-skeleton'
 import {
   formatNumber,
   runAsyncFnWithoutBlocking,
@@ -200,7 +194,7 @@ async function submitUserMessage(content: string) {
         generate: async function* ({ prompt, size = '1024x1024' }) {
           yield (
             <BotCard>
-              <EventsSkeleton />
+              <ImageLoadingSkeleton />
             </BotCard>
           )
 
