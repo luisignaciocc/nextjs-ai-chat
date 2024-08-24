@@ -189,7 +189,8 @@ async function submitUserMessage(content: string) {
             .optional()
             .describe('The size of the requested image.'),
           model: z
-            .enum(['dall-e-2', 'dall-e-3'])
+            // .enum(['dall-e-2', 'dall-e-3'])
+            .enum(['dall-e-2'])
             .optional()
             .default('dall-e-2')
             .describe('The DALL-E model to use.')
