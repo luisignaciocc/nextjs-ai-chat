@@ -10,12 +10,8 @@ import {
 } from 'ai/rsc'
 import { openai } from '@ai-sdk/openai'
 import OpenAI from 'openai'
-import {
-  spinner,
-  BotCard,
-  BotMessage,
-  SystemMessage
-} from '@/components/stocks'
+import { BotCard, BotMessage, SystemMessage } from '@/components/message'
+import { spinner } from '@/components/spinner'
 import { ImageLoadingSkeleton } from '@/components/image-loading-skeleton'
 
 import { z } from 'zod'
@@ -26,10 +22,9 @@ import {
   nanoid
 } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
-import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
+import { SpinnerMessage, UserMessage } from '@/components/message'
 import { Chat, Message } from '@/lib/types'
 import { auth } from '@/auth'
-import Image from 'next/image'
 
 const openaiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
