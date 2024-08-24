@@ -254,10 +254,23 @@ async function submitUserMessage(content: string) {
               ]
             })
 
+            const width =
+              size === '1024x1024' ? 1024 : size === '1024x1792' ? 1024 : 1792
+            const height =
+              size === '1024x1024' ? 1024 : size === '1024x1792' ? 1792 : 1024
+
             return (
-              <BotMessage
-                content={`![Imagen generada por DALL-E](${imageUrl})`}
-              />
+              <BotCard>
+                <a href={imageUrl} target="_blank" rel="noreferrer">
+                  <Image
+                    src={imageUrl}
+                    alt="Imagen generada por DALL-E"
+                    className="w-full h-auto rounded-lg"
+                    height={height}
+                    width={width}
+                  />
+                </a>
+              </BotCard>
             )
           } catch (error) {
             aiState.done({
@@ -382,9 +395,21 @@ export const getUIStateFromAIState = (aiState: Chat) => {
           message.content.map(tool => {
             return tool.toolName === 'dalle' &&
               (tool.result as { imageUrl: string })?.imageUrl ? (
-              <BotMessage
-                content={`![Imagen generada por DALL-E](${(tool.result as { imageUrl: string }).imageUrl})`}
-              />
+              <BotCard>
+                <a
+                  href={(tool.result as { imageUrl: string })?.imageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image
+                    src={(tool.result as { imageUrl: string })?.imageUrl}
+                    alt="Imagen generada por DALL-E"
+                    className="w-full h-auto rounded-lg"
+                    height={1024}
+                    width={1024}
+                  />
+                </a>
+              </BotCard>
             ) : null
           })
         ) : message.role === 'user' ? (
