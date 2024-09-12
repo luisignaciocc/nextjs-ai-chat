@@ -124,7 +124,7 @@ async function submitUserMessage(content: string) {
   let textNode: undefined | React.ReactNode
 
   const result = await streamUI({
-    model: openai('gpt-4o'),
+    model: openai('o1-mini'),
     initial: <SpinnerMessage />,
     system: `\
       You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2023-10. Current date: ${
