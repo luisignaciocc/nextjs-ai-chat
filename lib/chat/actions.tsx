@@ -103,7 +103,19 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
   }
 }
 
-async function submitUserMessage(content: string, model: string) {
+async function submitUserMessage({
+  content,
+  model,
+  systemPrompt,
+  temperature,
+  topP
+}: {
+  content: string
+  model: string
+  systemPrompt: string
+  temperature: number
+  topP: number
+}) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
@@ -126,25 +138,9 @@ async function submitUserMessage(content: string, model: string) {
   const result = await streamUI({
     model: openai(model),
     initial: <SpinnerMessage />,
-    system: `\
-      You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2023-10. Current date: ${
-        new Date().toISOString().split('T')[0]
-      }.
-
-      Capabilities:
-      - Image input capabilities are enabled.
-      - You provide direct and concise answers for straightforward questions.
-      - You have the ability to generate images based on detailed text descriptions.
-      - You can assist with a wide range of tasks, including answering questions, providing explanations, generating text, and more.
-
-      Behavior:
-      - Provide clear, concise, and accurate responses.
-      - When asked to generate images, follow the guidelines and policies regarding image creation.
-      - Always strive to be helpful, polite, and respectful.
-
-      Tools:
-      - You have access to the dalle tool, which you can use to enhance your responses and provide more detailed assistance.
-      `,
+    system: systemPrompt,
+    temperature,
+    topP,
     messages: [
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,

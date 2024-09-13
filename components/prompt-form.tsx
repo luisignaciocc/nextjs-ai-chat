@@ -25,12 +25,20 @@ import {
   SelectValue
 } from './ui/select'
 import { FooterText } from './footer'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from './ui/accordion'
+import { Label } from './ui/label'
+import { Input } from './ui/input'
 
 enum Model {
   'gpt-4o' = 'gpt-4o',
-  'gpt-4o-mini' = 'gpt-4o-mini',
-  'o1-preview' = 'o1-preview',
-  'o1-mini' = 'o1-mini'
+  'gpt-4o-mini' = 'gpt-4o-mini'
+  // 'o1-preview' = 'o1-preview',
+  // 'o1-mini' = 'o1-mini'
 }
 
 export function PromptForm({
@@ -41,6 +49,29 @@ export function PromptForm({
   setInput: (value: string) => void
 }) {
   const [model, setModel] = React.useState(Model['gpt-4o-mini'])
+  const [config, setConfig] = React.useState({
+    systemPrompt: `\
+      You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2023-10. Current date: ${
+        new Date().toISOString().split('T')[0]
+      }.
+
+      Capabilities:
+      - Image input capabilities are enabled.
+      - You provide direct and concise answers for straightforward questions.
+      - You have the ability to generate images based on detailed text descriptions.
+      - You can assist with a wide range of tasks, including answering questions, providing explanations, generating text, and more.
+
+      Behavior:
+      - Provide clear, concise, and accurate responses.
+      - When asked to generate images, follow the guidelines and policies regarding image creation.
+      - Always strive to be helpful, polite, and respectful.
+
+      Tools:
+      - You have access to the dalle tool, which you can use to enhance your responses and provide more detailed assistance.
+      `,
+    temperature: 0.7,
+    topP: 1
+  })
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
@@ -53,7 +84,12 @@ export function PromptForm({
     }
   }, [])
 
-  console.log('model', model)
+  const handleConfigChange: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = e => {
+    const { name, value } = e.target
+    setConfig(prev => ({ ...prev, [name]: value }))
+  }
 
   return (
     <form
@@ -80,7 +116,13 @@ export function PromptForm({
         ])
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value, model)
+        const responseMessage = await submitUserMessage({
+          content: value,
+          model,
+          systemPrompt: config.systemPrompt,
+          temperature: config.temperature,
+          topP: config.topP
+        })
         setMessages(currentMessages => [...currentMessages, responseMessage])
       }}
       className="flex flex-col space-y-2"
@@ -147,6 +189,56 @@ export function PromptForm({
           </SelectContent>
         </Select>
       </div>
+      <Accordion type="single" collapsible className="w-full hidden sm:block">
+        <AccordionItem value="config">
+          <AccordionTrigger className="text-sm font-medium">
+            Advanced Configuration
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
+              <div className="w-full space-y-2">
+                <Label htmlFor="systemPrompt">System Prompt</Label>
+                <Textarea
+                  id="systemPrompt"
+                  name="systemPrompt"
+                  placeholder="Enter system prompt"
+                  value={config.systemPrompt}
+                  onChange={handleConfigChange}
+                  className="w-full p-1 rounded-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="temperature">Temperature</Label>
+                  <Input
+                    id="temperature"
+                    name="temperature"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={config.temperature}
+                    onChange={handleConfigChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="topP">Top P</Label>
+                  <Input
+                    id="topP"
+                    name="topP"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={config.topP}
+                    onChange={handleConfigChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </form>
   )
 }
