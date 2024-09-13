@@ -103,7 +103,7 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
   }
 }
 
-async function submitUserMessage(content: string) {
+async function submitUserMessage(content: string, model: string) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
@@ -124,7 +124,7 @@ async function submitUserMessage(content: string) {
   let textNode: undefined | React.ReactNode
 
   const result = await streamUI({
-    model: openai('o1-mini'),
+    model: openai(model),
     initial: <SpinnerMessage />,
     system: `\
       You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2023-10. Current date: ${

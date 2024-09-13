@@ -17,6 +17,21 @@ import {
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { nanoid } from 'nanoid'
 import { useRouter } from 'next/navigation'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from './ui/select'
+import { FooterText } from './footer'
+
+enum Model {
+  'gpt-4o' = 'gpt-4o',
+  'gpt-4o-mini' = 'gpt-4o-mini',
+  'o1-preview' = 'o1-preview',
+  'o1-mini' = 'o1-mini'
+}
 
 export function PromptForm({
   input,
@@ -25,6 +40,7 @@ export function PromptForm({
   input: string
   setInput: (value: string) => void
 }) {
+  const [model, setModel] = React.useState(Model['gpt-4o-mini'])
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
@@ -36,6 +52,8 @@ export function PromptForm({
       inputRef.current.focus()
     }
   }, [])
+
+  console.log('model', model)
 
   return (
     <form
@@ -62,9 +80,10 @@ export function PromptForm({
         ])
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value)
+        const responseMessage = await submitUserMessage(value, model)
         setMessages(currentMessages => [...currentMessages, responseMessage])
       }}
+      className="flex flex-col space-y-2"
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
         <Tooltip>
@@ -98,7 +117,7 @@ export function PromptForm({
           value={input}
           onChange={e => setInput(e.target.value)}
         />
-        <div className="absolute right-0 top-[13px] sm:right-4">
+        <div className="absolute right-0 top-[13px] sm:right-4 flex">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button type="submit" size="icon" disabled={input === ''}>
@@ -109,6 +128,24 @@ export function PromptForm({
             <TooltipContent>Send message</TooltipContent>
           </Tooltip>
         </div>
+      </div>
+      <div className="w-full hidden sm:flex justify-between items-center">
+        <FooterText />
+        <Select
+          onValueChange={value => setModel(value as unknown as Model)}
+          value={model as unknown as string}
+        >
+          <SelectTrigger className="w-fit">
+            <SelectValue placeholder="Model" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(Model).map(model => (
+              <SelectItem key={model} value={model}>
+                {model}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </form>
   )
