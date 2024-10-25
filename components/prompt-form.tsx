@@ -184,7 +184,7 @@ export function PromptForm({
         <FooterText />
         <Select
           onValueChange={value => setModel(value as unknown as Model)}
-          value={model}
+          value={model as unknown as string}
         >
           <SelectTrigger className="w-fit">
             <SelectValue placeholder="Model" />
