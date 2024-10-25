@@ -36,9 +36,9 @@ import { Input } from './ui/input'
 
 enum Model {
   'gpt-4o' = 'gpt-4o',
-  'gpt-4o-mini' = 'gpt-4o-mini',
-  'o1-preview' = 'o1-preview',
-  'o1-mini' = 'o1-mini'
+  'gpt-4o-mini' = 'gpt-4o-mini'
+  // 'o1-preview' = 'o1-preview',
+  // 'o1-mini' = 'o1-mini'
 }
 
 export function PromptForm({
@@ -48,7 +48,7 @@ export function PromptForm({
   input: string
   setInput: (value: string) => void
 }) {
-  const [model, setModel] = React.useState(Model['gpt-4o-mini'])
+  const [model, setModel] = React.useState('')
   const [config, setConfig] = React.useState({
     systemPrompt: `\
       You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2023-10. Current date: ${
@@ -77,6 +77,19 @@ export function PromptForm({
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const { submitUserMessage } = useActions()
   const [_, setMessages] = useUIState<typeof AI>()
+
+  const currentModel = React.useMemo(() => {
+    if (model) {
+      return model
+    } else {
+      const width = window.innerWidth
+      if (width < 640) {
+        setModel(Model['gpt-4o-mini'])
+      } else {
+        setModel(Model['gpt-4o'])
+      }
+    }
+  }, [model])
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -118,7 +131,7 @@ export function PromptForm({
         // Submit and get response message
         const responseMessage = await submitUserMessage({
           content: value,
-          model,
+          model: currentModel,
           systemPrompt: config.systemPrompt,
           temperature: config.temperature,
           topP: config.topP
@@ -175,7 +188,7 @@ export function PromptForm({
         <FooterText />
         <Select
           onValueChange={value => setModel(value as unknown as Model)}
-          value={model as unknown as string}
+          value={currentModel as unknown as string}
         >
           <SelectTrigger className="w-fit">
             <SelectValue placeholder="Model" />
