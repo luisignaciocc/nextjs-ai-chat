@@ -36,9 +36,9 @@ import { Input } from './ui/input'
 
 enum Model {
   'gpt-4o' = 'gpt-4o',
-  'gpt-4o-mini' = 'gpt-4o-mini'
-  // 'o1-preview' = 'o1-preview',
-  // 'o1-mini' = 'o1-mini'
+  'gpt-4o-mini' = 'gpt-4o-mini',
+  'o1-preview' = 'o1-preview',
+  'o1-mini' = 'o1-mini'
 }
 
 export function PromptForm({
