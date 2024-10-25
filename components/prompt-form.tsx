@@ -79,15 +79,6 @@ export function PromptForm({
   const [_, setMessages] = useUIState<typeof AI>()
 
   React.useEffect(() => {
-    const width = window.innerWidth
-    if (width < 768) {
-      setModel(Model['gpt-4o-mini'])
-    } else {
-      setModel(Model['gpt-4o'])
-    }
-  }, [])
-
-  React.useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
     }
