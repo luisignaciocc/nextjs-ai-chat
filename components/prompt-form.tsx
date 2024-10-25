@@ -79,6 +79,15 @@ export function PromptForm({
   const [_, setMessages] = useUIState<typeof AI>()
 
   React.useEffect(() => {
+    const width = window.innerWidth
+    if (width < 768) {
+      setModel(Model['gpt-4o-mini'])
+    } else {
+      setModel(Model['gpt-4o'])
+    }
+  }, [])
+
+  React.useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
     }
@@ -175,7 +184,7 @@ export function PromptForm({
         <FooterText />
         <Select
           onValueChange={value => setModel(value as unknown as Model)}
-          value={model as unknown as string}
+          value={model}
         >
           <SelectTrigger className="w-fit">
             <SelectValue placeholder="Model" />
